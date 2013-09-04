@@ -65,9 +65,6 @@ $r['datetime']= $yy.'-'.$mm.'-'.$dd.' '.$h.':'.$m.':'.$s;
 $r['date']= $yy.$mm.$dd;
 $r['time']= $h.$m.$s;
 
-// Check and export validation
-$r['valid']=is_numeric($r['tags'][0])&&is_numeric($r['tags'][1]);
-
 $r['success']=true;
 echo json_encode($r);
 ?>

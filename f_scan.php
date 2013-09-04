@@ -43,13 +43,10 @@ if ($handle = opendir('public/upload/')) {
     // Parse and export tags
     foreach(explode("-", $p['filename']) as $key => $tag){
       $r['filedata'][$k]['tags'][]=$tag;
-      if($key>1&&strlen($tag)>1){
+      if($key>2&&strlen($tag)>0){
         $r['taglist'][$tag]=$tag;
       }
     }
-
-    // Validate by first 2 tags
-    $r['filedata'][$k]['valid']=is_numeric($r['filedata'][$k]['tags'][0])&&is_numeric($r['filedata'][$k]['tags'][1]);
 
     // Retrieve and export date
     $datetime="00000000000000000000";
@@ -80,6 +77,7 @@ if ($handle = opendir('public/upload/')) {
   }
 }
 $r['dirs']=$dirs;
+$r['taglist'][]="x";
 sort($r['taglist']);
 echo json_encode($r);
 file_put_contents('public/items.json', json_encode($r));

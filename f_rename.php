@@ -18,7 +18,7 @@ else {
   $r['info'][]=array("type"=>"error","text"=>"Failed to change filename");
 }
 
-sleep(1);
+sleep(0.1);
 
 echo json_encode($r);
 ?>

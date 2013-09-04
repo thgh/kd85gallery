@@ -1,57 +1,82 @@
 'use strict';
 
+var galleries;
 
 // Declare app level module which depends on filters, and services
 angular.module('Tagging', ['Tagging.controllers']);
 
 /* Controllers */
 angular.module('Tagging.controllers', [])
-.controller('GalleryCtrl', function($scope, $rootScope) {
-  $scope.editing=false;
+.controller('GalleryCtrl', function($scope, $timeout) {
   $scope.saving=false;
   $scope.prevIndex=1;
+  $scope.cExif=true;
+  $scope.i=0;
 
   Alertify.log.delay=10000;
   Alertify.log.info('Notifications here!');
 
-  $scope.$watch('a', function() {
-    if($scope.prevIndex==$scope.i){
-      if(!$scope.editing)
-        Alertify.log.info('Editing');
-      $scope.editing=true;
-    }
-    $scope.prevIndex=$scope.i;
-  },true);
       
   $.getJSON('f_scan.php')
-  .done(function (d) {
+  .success(function (d) {
     $scope.filedata = d.filedata;
     $scope.taglist = d.taglist;
     $scope.dirs = d.dirs;
-    $scope.localRefresh();
-    $scope.setAct(0);
+
   });
 
-  $scope.localRefresh = function() {
+  $timeout(function() {
+    $scope.init(); 
+    $scope.localRefresh();       
+  }, 500)
 
-    var galleries = $('.ad-gallery').adGallery();
-    galleries[0].settings.effect = "none";
-    galleries[0].slideshow.disable();
+  $scope.init = function() {
+    galleries = $('.ad-gallery').adGallery({slideshow: {enable: false},effect:"none",animation_speed:1});
     galleries[0].settings.callbacks.afterImageVisible = function (new_image, old_image) {
       $scope.setAct(galleries[0].current_index); 
       console.log("Image " + $scope.i + " is now active");
     };
+  }
 
+  $scope.localRefresh = function(i) {
+    galleries[0].removeAllImages();
     angular.forEach($scope.filedata, function(v,k) {
       if (v.basename && !$scope.tagged || $.inArray($scope.tagged,$scope.taglist)) {
         galleries[0].addImage('thumb.php?src=public/upload/' + v.path , 'public/upload/' + v.path, 'img' + k,!v.tags[2]);
       }
     });
-    galleries[0].showImage(0);
+    galleries[0].showImage(i||0);
 
     Alertify.log.info('Gallery refreshed');
   }
 
+  $scope.fetch = function() {
+    var i=$scope.i;
+    $.getJSON('f_scan.php')
+    .success(function (d) {
+      $scope.filedata = d.filedata;
+      $scope.taglist = d.taglist;
+      $scope.dirs = d.dirs;
+    })
+    .then(function (){
+      $scope.localRefresh(i);
+    });
+  }
+
+  $scope.pathgen = function() {
+    if(!$scope.a)return "Loading";
+    var a = $scope.a;
+    var newn = a.tags[0];
+
+    if($scope.cExif){
+      newn += "-"+a.date+"-"+a.time;
+    }
+    newn = a.dirname+'/'+newn;
+    $.each($('.tags .btn-primary'), function (k, v) {
+      newn += '-' + $(v).data('tag');
+    });
+    return newn + '.' + a.extension;
+  }
 
   $scope.addTag = function(tag) {
     if(!tag)return;
@@ -63,7 +88,6 @@ angular.module('Tagging.controllers', [])
     $scope.itag="";
   }
   $scope.taggle = function(tag,on) {
-    $scope.editing=true;
     //jquery!
     $('.tag'+tag).toggleClass('btn-primary');
     Alertify.log.info('Taggle: '+tag);
@@ -81,7 +105,6 @@ angular.module('Tagging.controllers', [])
     $scope.$apply(function(){
       $scope.a=angular.copy($scope.filedata[i]);
       $scope.i=i;
-      $scope.editing=false;
       //jquery!
       $('.tags button').removeClass('btn-primary');
       angular.forEach($scope.a.tags,function(v,k){
@@ -96,23 +119,11 @@ angular.module('Tagging.controllers', [])
   }
 
   $scope.saveFile = function(){
-    $scope.editing=false;
     $scope.saving=true;
     var a=$scope.a;
 
-    if(!a.tags[1])
-      a.tags[1]="000000";
-
     var oldn = $scope.filedata[$scope.i].path;
-    var newn = a.tags[0] + '-' + a.tags[1];
-
-    newn = a.dirname+'/'+newn;
-
-    $.each($('.tags .btn-primary'), function (k, v) {
-      newn += '-' + $(v).data('tag');
-      Alertify.log.info('Tag '+$(v).data('tag'));
-    });
-    newn += '.' + a.extension;
+    var newn = $scope.pathgen();
 
     Alertify.log.info('Old '+oldn);
     Alertify.log.info('New '+newn);
@@ -135,7 +146,6 @@ angular.module('Tagging.controllers', [])
               $('#img' + $scope.i).attr('alt', 'true');
               $('#img' + $scope.i).attr('href', 'public/upload/' + newn);
               $('#img' + $scope.i + ' img').attr('src', 'thumb.php?src=public/upload/' + newn);
-              $scope.editing=false;
             })
           }
           else{

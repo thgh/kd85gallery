@@ -4,15 +4,14 @@ angular.module('wim', [])
 .directive('gallery', function() {
 	return {
 		restrict: 'E',
-		transclude: true,
-		scope: { s:'@s' },
+		scope: { src:'=src' },
 		template:
-			'<div class="hide" ng-transclude></div>' +
 			'<p class="gallery-lg"><a href="{{now.src}}"><img ng-src="{{now.src}}" /></a></p>'+
-			'<p class="gallery-sm"><a href ng-click="set(i)" ng-repeat="i in imgs"><img ng-src="{{i.thumb}}" ng-class="{s:now==i}" /></a></p>',
+			'<p class="gallery-sm"><a href="" ng-click="set(i)" ng-repeat="i in imgs"><img ng-src="{{i.thumb}}" ng-class="{s:now==i}" /></a></p>',
 		link: function(scope, element, attrs) {
 			scope.imgs=[];
-			angular.forEach(element.children()[0].textContent.split(/[\s,]+/), function(v,k) {
+			if(!scope.src)return;
+			angular.forEach(scope.src.split(/[\s,]+/), function(v,k) {
 				if(v){
 					var temp=v.split('/');
 					scope.imgs.push({
