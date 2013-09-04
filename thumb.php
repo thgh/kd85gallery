@@ -739,7 +739,7 @@ class timthumb {
 
 		$imgType = "";
 		$tempfile = tempnam($this->cacheDirectory, 'timthumb_tmpimg_');
-		$wimfile  = '/var/www/kd85/public/thumbs/'.str_replace('/', 't', pathinfo($localImage,PATHINFO_BASENAME));
+		$wimfile  = 'public/thumbs/'.str_replace('/', 't', pathinfo($localImage,PATHINFO_BASENAME));
 		if(preg_match('/^image\/(?:jpg|jpeg)$/i', $mimeType)){ 
 			$imgType = 'jpg';
 			imagejpeg($canvas, $tempfile, $quality);

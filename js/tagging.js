@@ -44,7 +44,7 @@ angular.module('Tagging.controllers', [])
 
     angular.forEach($scope.filedata, function(v,k) {
       if (v.basename && !$scope.tagged || $.inArray($scope.tagged,$scope.taglist)) {
-        galleries[0].addImage('thumb.php?src=kd85/public/upload/' + v.path , 'public/upload/' + v.path, 'img' + k,!v.tags[2]);
+        galleries[0].addImage('thumb.php?src=public/upload/' + v.path , 'public/upload/' + v.path, 'img' + k,!v.tags[2]);
       }
     });
     galleries[0].showImage(0);
