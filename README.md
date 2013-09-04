@@ -24,6 +24,7 @@ git clone https://github.com/thgh/kd85gallery.git
 ```
 
 Tag editor in .
+
 Stuff to copy to server in public/
 
 ## Troubleshooting
