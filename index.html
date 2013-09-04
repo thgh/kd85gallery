@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="Tagging">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" type="text/css" href="public/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="public/js/adgallery/jquery.ad-gallery.css">
+  <link rel="stylesheet" type="text/css" href="css/alertify.min.css">
+  <script type="text/javascript" src="js/alertify.min.js"></script>
+  <script type="text/javascript" src="public/js/jquery-2.0.3.min.js"></script>
+  <script type="text/javascript" src="public/js/adgallery/jquery.ad-gallery.min.js"></script>
+  <script type="text/javascript" src="public/js/angular.min.js"></script>
+  <script type="text/javascript" src="js/tagging.js"></script>
+  <script type="text/javascript">
+  </script>
+
+  <style type="text/css">
+  .container{width: 90%;max-width: 90%}
+
+  .topnav{background: #eee;box-shadow: 0 0 20px #ccc;padding: 1em 5% 0.5em;margin-bottom: 20px}
+
+  .ad-gallery{position: relative;}
+  .ad-gallery .ad-controls {margin: 1em;position: fixed;top:0;left:0;}
+
+  .ad-prev, .ad-next,.ad-image-description{display: none!important;}
+
+  .ad-gallery .ad-thumbs ul { margin-bottom:1em;}
+  .ad-gallery .ad-thumbs img{padding: 5px;height:100px;width:100px;transition:.3s linear;}
+  .ad-gallery .ad-thumbs img[alt=true]{background: #009}
+  .ad-gallery .ad-thumbs img[title=true]{background: #900}
+  .ad-gallery .ad-thumbs .ad-active img{border-radius: 50%;}
+
+  .tags{line-height: 3em}
+  .tags button{margin-right:5px;}
+  body{padding-bottom: 50px;}
+  </style>
+  <title>Gallery</title>
+</head>
+<body ng-controller="GalleryCtrl">
+  <div id="gallery" class="ad-gallery">
+    <div class="topnav">
+      <div class="ad-nav">
+        <div class="ad-thumbs">
+          <ul>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="ad-controls">
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-6">
+          <p class="pull-right">
+            <a href="public" class="btn btn-link" id="fetch">Visit kd85</a>
+            <a href="public/gallery.html" class="btn btn-link" id="fetch">Visit complete gallery</a>
+            <button class="btn btn-warning" id="fetch">Scan public/upload folder</button>
+          </p>
+          <p>
+            <button class="btn btn-success" ng-disabled="!editing" id="save" ng-click="saveFile()">Save to filename</button>
+          </p>
+          
+          <dl>
+            <dt>Path</dt>
+            <dd class="text-muted">{{filedata[i].path}}</dd>
+            <dd id="name">{{a.path}}</dd>
+
+            <dt>Folder</dt>
+            <dd class="text-muted">{{filedata[i].dirname}}</dd>
+            <dd id="dir">
+              <select class="form-control" ng-model="a.dirname" ng-options="k as v for (k , v) in dirs" id="sdirname">
+                <option>No folder</option>
+              </select>
+            </dd>
+
+            <br />
+
+            <dd>
+              <label for="idate">Date
+                <input type="text" class="form-control" ng-model="a.tags[0]" id="idate" placeholder="Date" />
+              </label> 
+              <label for="itime">Time
+                <input type="text" class="form-control" ng-model="a.tags[1]" id="itime" placeholder="Time" />
+              </label>
+            </dd>
+            <p ng-hide="a.tags[0]==a.date&&a.tags[1]==a.time">
+              <a href="#" class="btn btn-success" ng-click="grabExif()">Use EXIF datetime</a>
+               &nbsp; Date: {{a.date}} &nbsp; Time: {{a.time}}
+            </p>
+          </dl>
+
+          <form class="form-inline">
+            <label>
+              Tags
+              <input type="text" ng-model="itag" placeholder="New tag" class="form-control" />
+            </label>
+            <button class="btn btn-success" ng-click="addTag(itag)">Add this tag</button>
+          </form>
+
+          <p class="tags">
+            <button ng-repeat="tag in taglist" ng-click="taggle(tag)" class='btn btn-default tag{{tag}}' data-tag='{{tag}}'>{{tag}}</button>
+          </p>
+
+        </div>
+        <div class="col-sm-6">
+          <div class="ad-image-wrapper"></div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="wim">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="js/adgallery/jquery.ad-gallery.css">
+  <script type="text/javascript" src="js/angular.min.js"></script>
+  <script type="text/javascript" src="js/jquery-2.0.3.min.js"></script>
+  <script type="text/javascript" src="js/adgallery/jquery.ad-gallery.min.js"></script>
+
+  <script type="text/javascript">
+  'use strict';
+
+  var galleries;
+  var filedata;
+  var taglist;
+  var i = 0;
+
+  angular.module('wim', ['wim.controllers']);
+
+  angular.module('wim.controllers', [])
+  .controller('Main', function($scope,$http) {
+    $scope.tagged=false;
+    $scope.taglist=[];
+    $scope.current_index=0;
+
+    $http.get('items.json')
+    .success(function(data) {
+      $scope.filedata = data.filedata;
+      $scope.taglist = data.taglist;
+      $scope.dirs = data.dirs;
+      $scope.localRefresh();
+    });
+
+
+    galleries = $('.ad-gallery').adGallery();
+    galleries[0].slideshow.disable();
+    galleries[0].settings.callbacks.afterImageVisible = function (new_image, old_image) {
+      $scope.$apply(function () {
+        $scope.current_index = galleries[0].current_index;
+      });
+    };
+
+    $scope.localRefresh = function() {
+      galleries[0].removeAllImages();
+      angular.forEach($scope.filedata, function(v,k) {
+        galleries[0].addImage("thumbs/" + v.basename.replace('/','t') , "upload/" + v.path, "img" + k, "upload/" + v.path);
+      });
+      galleries[0].showImage(0);
+    }
+
+    $scope.useTag = function(index) {
+      if(index<0){
+        $scope.localRefresh();
+        return;
+      }
+      $scope.tagged = $scope.filedata[$scope.current_index].tags[index];
+      console.log($scope.tagged)
+      galleries[0].removeAllImages();
+      angular.forEach($scope.filedata, function(v,k) {
+        if ($.inArray($scope.tagged,v.tags)>0) {
+          galleries[0].addImage("thumbs/" + v.basename.replace('/','t') , "upload/" + v.path, "img" + k, "upload/" + v.path);
+        }
+      });
+      galleries[0].showImage(0);
+    }
+  })
+  </script>
+
+  <style type="text/css">
+  .container{width: 90%;max-width: 90%}
+
+  .options label,.options button{margin-left: 2em;}
+
+  .topnav{background: #eee;box-shadow: 0 0 20px #ccc;padding: 1em 5% 0.5em;margin-bottom: 20px}
+
+  .ad-gallery{position: relative;}
+  .ad-gallery .ad-controls {margin: 1em;position: fixed;top:0;left:0;}
+
+
+  .ad-gallery .ad-thumbs ul { margin-bottom:1em;}
+  .ad-gallery .ad-thumbs img{padding: 5px;height:100px;width:100px;transition:.3s linear;}
+  .ad-gallery .ad-thumbs .ad-active img{background: #666}
+
+  .tags{margin-bottom: 5px;}
+  .tags button{margin:3px;}
+  body{padding-bottom: 50px;}
+  </style>
+  <title>Gallery</title>
+</head>
+<body ng-controller="Main">
+  <div id="gallery" class="ad-gallery">
+    <div class="topnav">
+      <div class="ad-nav">
+        <div class="ad-thumbs">
+          <ul>
+          </ul>
+        </div>
+      </div>
+      <div class="tags">
+        <button class="btn btn-default" ng-click="useTag(-1)">All</button>
+        <button class="btn btn-default" ng-repeat="t in filedata[current_index].tags" ng-hide="$index<2" ng-click="useTag($index)">{{t}}</button>
+      </div>
+    </div>
+    <div class="ad-controls"></div>
+    <div class="ad-image-wrapper"></div>
+  </div>
+</body>
+</html>

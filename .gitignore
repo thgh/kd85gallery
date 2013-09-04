@@ -1,0 +1,6 @@
+.gitignore~
+cache/
+public/thumbs/*
+public/upload/*
+!public/thumbs/.gitkeep
+!public/upload/.gitkeep
